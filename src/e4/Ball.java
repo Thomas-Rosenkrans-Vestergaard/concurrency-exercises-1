@@ -19,6 +19,7 @@ class Ball {
   private int y = 0;
   private int dx = 5;
   private int dy = 5;
+  private Thread t;
 
   public Ball(JPanel c, Color col) {
     canvas = c;
@@ -30,6 +31,8 @@ class Ball {
     g.setColor(canvas.getBackground());
     g.fillOval(x, y, XSIZE, YSIZE);
     stop = true;
+    t.interrupt();
+    t = null;
   }
 
   public void move() {
@@ -60,17 +63,20 @@ class Ball {
     g.dispose();
   }
 
-
   public void run() {
-    stop = false;
-    while (!stop) {
-      move();
-      try {
-        Thread.sleep(SLEEP_TIME);
-      } catch (InterruptedException e) {
-        System.out.println(e);
+    t = new Thread(() -> {
+      stop = false;
+      while (!stop) {
+        move();
+        try {
+          Thread.sleep(SLEEP_TIME);
+        } catch (InterruptedException e) {
+          System.out.println(e);
+        }
       }
-    }
+    });
+
+    t.start();
   }
 
 }
